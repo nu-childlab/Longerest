@@ -2,16 +2,16 @@
 <html>
     <head>
         <title>My experiment</title>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> 
-        <script src="jspsych-4.3/jspsych.js"></script> 
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="jspsych-4.3/jspsych.js"></script>
         <script src="jspsych-4.3/plugins/jspsych-text.js"></script>
         <script src="jspsych-4.3/plugins/jspsych-survey-text.js"></script>
-        <script src="jspsych-4.3/plugins/jspsych-single-stim.js"></script> 
-        <script src="FileSaver.js-master/FileSaver.js"></script> 
-        <!-- use the plugin for multiple trial elemets 
+        <script src="jspsych-4.3/plugins/jspsych-single-stim.js"></script>
+        <script src="FileSaver.js-master/FileSaver.js"></script>
+        <!-- use the plugin for multiple trial elemets
         <script src="jspsych-4.3/plugins/jspsych-multi-stim-multi-response.js"></script>
         -->
-        <link href="jspsych-4.3/css/jspsych.css" rel="stylesheet" type="text/css"</link> 
+        <link href="jspsych-4.3/css/jspsych_lgs7.css" rel="stylesheet" type="text/css"</link>
     </head>
     <body>
     </body>
@@ -34,11 +34,11 @@
     var images = numbers.map(function(i){
         var withZero = i;
         if (i < 10) withZero = "0" + i;
-        return "img/Slide" + withZero + ".jpg";
+        return "img_lines/Slide" + withZero + ".jpg";
     });
 
     var test_stimuli = images;
-    /* var test_stimuli = images.map(function(image){ 
+    /* var test_stimuli = images.map(function(image){
         return ["<p align='center'><img src='" + image + "'></p>"]
     }); */
 
@@ -55,19 +55,19 @@
     } */
 
     /* pre-load pictures */
-    function updateLoadedCount(nLoaded) { 
+    function updateLoadedCount(nLoaded) {
         var percentcomplete = nLoaded / images.length * 100;
         console.log('Loaded '+percentcomplete+'% of experiment');
     }
 
     jsPsych.preloadImages(images, function(){ startExperiment(); }, function(nLoaded){ updateLoadedCount(nLoaded); });
 
-    /* define separate welcome block 
+    /* define separate welcome block
     var welcome_block = {
         type: "text",
         text: "Welcome to the experiment. Press any key to begin."
     };
-    
+
 
     var ID_block = {
         type: 'survey-text',
@@ -77,20 +77,20 @@
     /* define instructions block */
     var instructions_block = {
         type: "text",
-        text: "<p style='margin-top:20%'>Welcome to the experiment!</p>" + 
-            "<p>In this study, an image will appear in the center " + 
-            "of the screen accompanied by a sentence. " + 
-            "Your task is to decide whether the sentence " + 
-            "accurately describes the picture.</p>" + 
-            "<p>You have up to " + timeToRespondSecs + " seconds to make your " + 
-            " decision for each trial. There are " + num_trials + 
-            " trials in the experiment.</p>" +   
-            "<p>If the sentence " + 
+        text: "<p style='margin-top:20%'>Welcome to the experiment!</p>" +
+            "<p>In this study, an image will appear in the center " +
+            "of the screen accompanied by a sentence. " +
+            "Your task is to decide whether the sentence " +
+            "accurately describes the picture.</p>" +
+            "<p>You have up to " + timeToRespondSecs + " seconds to make your " +
+            " decision for each trial. There are " + num_trials +
+            " trials in the experiment.</p>" +
+            "<p>If the sentence " +
             "<strong>accurately</strong> describes the picture,<br> " +
-            "press the letter <strong>f</strong> on the keyboard." + 
-            "<p>If the sentence <strong>does not</strong> " + 
-            "accurately describe the picture,<br>press the letter" + 
-            " <strong>j</strong> on the keyboard. </p>" + 
+            "press the letter <strong>f</strong> on the keyboard." +
+            "<p>If the sentence <strong>does not</strong> " +
+            "accurately describe the picture,<br>press the letter" +
+            " <strong>j</strong> on the keyboard. </p>" +
             "<p>Ready? Press any key to begin.</p>"
         /* gives the subject some time after the instructions before expt starts */
         // timing_post_trial: 2000
@@ -101,14 +101,14 @@
     /* define test block */
     var test_block = {
         type: "single-stim",
-        // is_html: true, 
+        // is_html: true,
         stimuli: all_trials,
         // 70 = F/f, 74 = J/j
         choices: ['f', 'j'],
         prompt: sentPresent,
-        timing_response: timeToRespond, 
+        timing_response: timeToRespond,
         timing_post_trial: ISI
-        /* calls random post-trial timing  
+        /* calls random post-trial timing
         timing_post_trial: post_trial_gap */
     };
 
@@ -172,23 +172,23 @@
 
     /* create an experiment definition array */
     var experiment = [];
-    // experiment.push(welcome_block); 
+    // experiment.push(welcome_block);
     //experiment.push(ID_block);
     experiment.push(instructions_block);
-    experiment.push(test_block); 
+    experiment.push(test_block);
     experiment.push(survey_block);
     //experiment.push(debrief_block);
     experiment.push(end_block);
 
     /* start the experiment */
-    /* embedded in "startExperiment" function for preloadImages */ 
+    /* embedded in "startExperiment" function for preloadImages */
     function startExperiment(){
         var subj = prompt("Please enter Subject ID", "s999");
         subj = subjcheck(subj);
         jsPsych.data.addProperties({subject: subj});
         //alert(subj)
         jsPsych.init({
-            experiment_structure: experiment, 
+            experiment_structure: experiment,
             /* the below prints the data to the screen */
             on_finish: function() {
                 //jsPsych.data.displayData('csv');
@@ -197,10 +197,10 @@
                 //document.write(testdat);
                 var blob = new Blob([dat], {type: "text/plain;charset=utf-8"});
                 saveAs(blob, subj + ".csv");
-             } 
+             }
         });
     }
-    
+
 
     </script>
 </html>
