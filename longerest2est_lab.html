@@ -17,10 +17,10 @@
     </body>
     <script>
 
-    //Last Edit: 3/24/16 (Rebecca)
+    //Last Edit: 10/8/15 (Rebecca)
 
     /* define experiment */
-    var sentence = "The blue dots are smaller than the red dots.";
+    var sentence = "The biggest dots are red.";
 
     var timeToRespond = 10000;
 
@@ -77,7 +77,7 @@
     /* define instructions block */
     var instructions_block = {
         type: "text",
-        text: "<p style='margin-top:0%'>Welcome to the experiment!</p>" +
+        text: "<p>Welcome to the experiment!</p>" +
             "<p>In this study, an image will appear in the center " +
             "of the screen accompanied by a sentence. " +
             "Your task is to decide whether the sentence " +
@@ -96,7 +96,7 @@
         // timing_post_trial: 2000
     };
 
-    var sentPresent = "<p align='center' style='font-size:30px;margin-top:0px'>" + sentence + "</p><p align='center' style='font-size:15px;margin-top:-25px'>press <strong>f</strong> for yes, <strong>j</strong> for no"
+    var sentPresent = "<p align='center' style='font-size:30px;'>" + sentence + "</p><p align='center' style='font-size:15px;'>press <strong>f</strong> for yes, <strong>j</strong> for no"
 
     /* define test block */
     var test_block = {
