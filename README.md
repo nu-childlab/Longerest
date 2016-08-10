@@ -1,7 +1,7 @@
 # Longerest
 An experiment about group comparisons; uses jspsych for HTML/CSS/Javascript.
 
-The experiments as they were previously stored are in the versions-from-box branch. The master branch contains some css improvements.
+The experiments as they were previously stored are in the versions-from-box branch. The master branch contains some css improvements. Specifically, in experiments 4-9. the positioning of the stimuli and text has been made consistent, and there is a variable named "smaller scale" which can be used to better scale the image for different browsers.
 
 ## Dependencies
 
