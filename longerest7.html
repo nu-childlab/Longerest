@@ -13,11 +13,36 @@
         -->
         <link href="jspsych-4.3/css/jspsych.css" rel="stylesheet" type="text/css"</link>
     </head>
+    <style>
+      .margin_class{
+        margin-top: 40%;
+      }
+      .scaled_fixation_class{
+        margin-top: 300%;
+      }
+      .lab_fixation_class{
+        margin-top: 250%;
+      }
+      .scaled_sentence_class{
+        margin-top: 20%;
+      }
+      .lab_sentence_class{
+        margin-top: 10%;
+      }
+    </style>
     <body>
     </body>
     <script>
-
-    //Last Edit: 3/24/16 (Rebecca)
+    smaller_scale = false
+    if(smaller_scale){
+      margin_var = "class='margin_class'"
+      fix_margin_var = "class='scaled_fixation_class'"
+      sentence_margin_var = "class='scaled_sentence_class'"
+    } else{
+      margin_var = ""
+      fix_margin_var = "class='lab_fixation_class'"
+      sentence_margin_var = "class='lab_sentence_class'"
+    }
 
     /* define experiment */
     var sentence = "The blue lines are shorter than the red lines.";

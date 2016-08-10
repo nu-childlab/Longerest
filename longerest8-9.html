@@ -13,16 +13,41 @@
         -->
         <link href="jspsych-4.3/css/jspsych.css" rel="stylesheet" type="text/css"</link>
     </head>
+    <style>
+      .margin_class{
+        margin-top: 40%;
+      }
+      .scaled_fixation_class{
+        margin-top: 300%;
+      }
+      .lab_fixation_class{
+        margin-top: 250%;
+      }
+      .scaled_sentence_class{
+        margin-top: 20%;
+      }
+      .lab_sentence_class{
+        margin-top: 10%;
+      }
+    </style>
     <body>
     </body>
     <script>
-
-    //Last Edit: 3/23/16 (Rebecca)
+    smaller_scale = false
+    if(smaller_scale){
+      margin_var = "class='margin_class'"
+      fix_margin_var = "class='scaled_fixation_class'"
+      sentence_margin_var = "class='scaled_sentence_class'"
+    } else{
+      margin_var = ""
+      fix_margin_var = "class='lab_fixation_class'"
+      sentence_margin_var = "class='lab_sentence_class'"
+    }
 
     /* define experiment */
-    var sentence = "The blue lines are shorter than the red lines.";
+    var sentence8 = "The blue dots are smaller than the red dots.";
 
-    var response = "<p style='font-size:60px; text-align:center'>?</p>" +
+    var response = "<p " + margin_var + " style='font-size:60px; text-align:center'>?</p>" +
             "<p style='font-size:20px; text-align:center'>Press <strong>f</strong> for yes, <strong>j</strong> for no.</p>";
 
     var timeToRespond = 10000;
@@ -34,49 +59,51 @@
     var numbers = [2,3,4,5,7,8,9,10,12,13,14,15,17,18,19,20,22,23,24,25,27,28,29,30];
       //var numbers = [2];
 
-    var images = numbers.map(function(i){
+    var images8 = numbers.map(function(i){
+        var withZero = i;
+        if (i < 10) withZero = "0" + i;
+        return "img_dots/Slide" + withZero + ".png";
+    });
+
+    var test_stimuli8 = images8;
+
+    var repeatImage = 5;
+
+    var trials8 = jsPsych.randomization.repeat(test_stimuli8, repeatImage);
+    images8 = trials8;
+
+    //EXPERIMENT 9 SETUP
+
+    var sentence9 = "The blue lines are shorter than the red lines.";
+    var images9 = numbers.map(function(i){
         var withZero = i;
         if (i < 10) withZero = "0" + i;
         return "img_lines/Slide" + withZero + ".jpg";
     });
 
-    var test_stimuli = images;
+    var test_stimuli9 = images9;
+    var trials9 = jsPsych.randomization.repeat(test_stimuli9, repeatImage);
+    images9 = trials9;
 
-    var repeatImage = 5;
-
-    var all_trials = jsPsych.randomization.repeat(test_stimuli, repeatImage);
-
-    var num_trials = images.length * repeatImage;
-
-    /* function that generates a random value between 750 and 2250, uniform sampling */
-
-    /* var post_trial_gap = function() {
-        return Math.floor( Math.random() * 1500 ) + 750;
-    } */
+    all_images = images8.concat(images9)
 
     /* pre-load pictures */
     function updateLoadedCount(nLoaded) {
-        var percentcomplete = nLoaded / images.length * 100;
+        var percentcomplete = nLoaded / all_images.length * 100;
         console.log('Loaded '+percentcomplete+'% of experiment');
     }
 
-    jsPsych.preloadImages(images, function(){ startExperiment(); }, function(nLoaded){ updateLoadedCount(nLoaded); });
+    jsPsych.preloadImages(all_images, function(){ startExperiment(); }, function(nLoaded){ updateLoadedCount(nLoaded); });
 
-    /* define separate welcome block
-    var welcome_block = {
-        type: "text",
-        text: "Welcome to the experiment. Press any key to begin."
-    };
-    */
 
-    var images = jsPsych.randomization.repeat(test_stimuli, repeatImage);
+    var num_trials = all_images.length;
 
     var experiment = [];
 
     /* define instructions block */
     var instructions_block = {
         type: "text",
-        text: "<p>Welcome to the experiment!</p>" +
+        text: "<p " + margin_var + ">Welcome to the experiment!</p>" +
             "<p>In this study, a sentence will appear in the center " +
             "of the screen. You may read it for as long as you like," +
             " and then press spacebar to continue. " +
@@ -112,7 +139,7 @@
 
     var fix_block = {
         type: 'single-stim',
-        stimuli: ['<p style="font-size:128px; text-align:center; margin-top:250%">+</p>'],
+        stimuli: ["<p "+fix_margin_var+" style='font-size:128px; text-align:center;'>+</p>"],
         timing_response: 200, // how long to show the fixation for in ms
         response_ends_trial: false,
         choices: 'none', // no valid keys
@@ -122,10 +149,10 @@
 
     experiment.push(fix_block)
 
-    for(i=0; i<images.length; i++){
+    for(i=0; i<images8.length; i++){
         var sent_block = {
             type: 'text',
-            text: '<p style="font-size:57px; text-align:center; line-height: 55px; margin-top:10%">' + sentence + '</p>' +
+            text: "<p "+sentence_margin_var+" style='font-size:57px; text-align:center; line-height: 55px'>" + sentence8 + '</p>' +
             "<p><p align='center' style='font-size:15px;'>Press spacebar to continue</p>",
             cont_key: ['space'],
             is_html: true
@@ -133,7 +160,7 @@
 
         var stim_block = {
             type: 'single-stim',
-            stimuli: images[i],
+            stimuli: images8[i],
             choices: ['none'],
             timing_response: 200,
             response_ends_trial: false,
@@ -145,7 +172,8 @@
             choices: ['f','j'],
             timing_response: 5000,
             timing_post_trial: 200,
-            is_html: true
+            is_html: true,
+            data:{experiment:"lgs8"}
         };
 
         //experiment.push(blank_block);
@@ -156,6 +184,51 @@
 
     };
 
+    var break_block = {
+        type: "text",
+        text: "<p"+margin_var+">That's it for the first part!</p>" +
+            "<p>Press any key when you're ready to begin the next section!</p>",
+        /* gives the subject some time after the instructions before expt starts */
+        // timing_post_trial: 2000
+    };
+
+    experiment.push(break_block)
+    experiment.push(fix_block)
+
+    for(i=0; i<images9.length; i++){
+        var sent_block = {
+            type: 'text',
+            text: "<p "+sentence_margin_var+" style='font-size:57px; text-align:center; line-height: 55px'>" + sentence9 + '</p>' +
+            "<p><p align='center' style='font-size:15px;'>Press spacebar to continue</p>",
+            cont_key: ['space'],
+            is_html: true
+        };
+
+        var stim_block = {
+            type: 'single-stim',
+            stimuli: images9[i],
+            choices: ['none'],
+            timing_response: 200,
+            response_ends_trial: false,
+        };
+
+        var response_block = {
+            type: 'single-stim',
+            stimuli: [response],
+            choices: ['f','j'],
+            timing_response: 5000,
+            timing_post_trial: 200,
+            is_html: true,
+            data:{experiment:"lgs9"}
+        };
+
+        //experiment.push(blank_block);
+        experiment.push(sent_block);
+        experiment.push(fix_block);
+        experiment.push(stim_block);
+        experiment.push(response_block);
+
+    };
 
     /* define survey block */
     var survey_block = {
@@ -165,18 +238,6 @@
 
     experiment.push(survey_block)
 
-    /* generates unique code and appends data with code */
-    function makeid(){
-        var text = "";
-        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-        for( var i=0; i < 5; i++ )
-            text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-        return text;
-    }
-
-    var code = makeid();
 
     function subjcheck(subj){
         //alert("subj" + subj);
@@ -197,8 +258,6 @@
         return subj;
 
     }
-
-    //jsPsych.data.addProperties({subject: code});
 
     /* define debrief block */
     var debrief_block = {

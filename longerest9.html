@@ -13,16 +13,41 @@
         -->
         <link href="jspsych-4.3/css/jspsych.css" rel="stylesheet" type="text/css"</link>
     </head>
+    <style>
+      .margin_class{
+        margin-top: 40%;
+      }
+      .scaled_fixation_class{
+        margin-top: 300%;
+      }
+      .lab_fixation_class{
+        margin-top: 250%;
+      }
+      .scaled_sentence_class{
+        margin-top: 20%;
+      }
+      .lab_sentence_class{
+        margin-top: 10%;
+      }
+    </style>
     <body>
     </body>
     <script>
-
-    //Last Edit: 3/23/16 (Rebecca)
+    smaller_scale = false
+    if(smaller_scale){
+      margin_var = "class='margin_class'"
+      fix_margin_var = "class='scaled_fixation_class'"
+      sentence_margin_var = "class='scaled_sentence_class'"
+    } else{
+      margin_var = ""
+      fix_margin_var = "class='lab_fixation_class'"
+      sentence_margin_var = "class='lab_sentence_class'"
+    }
 
     /* define experiment */
-    var sentence = "The blue dots are smaller than the red dots.";
+    var sentence = "The blue lines are shorter than the red lines.";
 
-    var response = "<p style='font-size:60px; text-align:center'>?</p>" +
+    var response = "<p " + margin_var + " style='font-size:60px; text-align:center'>?</p>" +
             "<p style='font-size:20px; text-align:center'>Press <strong>f</strong> for yes, <strong>j</strong> for no.</p>";
 
     var timeToRespond = 10000;
@@ -37,7 +62,7 @@
     var images = numbers.map(function(i){
         var withZero = i;
         if (i < 10) withZero = "0" + i;
-        return "img_dots/Slide" + withZero + ".png";
+        return "img_lines/Slide" + withZero + ".jpg";
     });
 
     var test_stimuli = images;
@@ -69,14 +94,14 @@
     };
     */
 
-    var images = jsPsych.randomization.repeat(test_stimuli, repeatImage);
+    //var images = jsPsych.randomization.repeat(test_stimuli, repeatImage);
 
     var experiment = [];
 
     /* define instructions block */
     var instructions_block = {
         type: "text",
-        text: "<p>Welcome to the experiment!</p>" +
+        text: "<p " + margin_var + ">Welcome to the experiment!</p>" +
             "<p>In this study, a sentence will appear in the center " +
             "of the screen. You may read it for as long as you like," +
             " and then press spacebar to continue. " +
@@ -99,20 +124,9 @@
 
     experiment.push(instructions_block)
 
-    /* define test block */
-    // var blank_block = {
-    //     type: 'single-stim',
-    //     stimuli: [' '],
-    //     timing_response: 500, // how long to show the fixation for in ms
-    //     response_ends_trial: false,
-    //     choices: 'none', // no valid keys
-    //     timing_post_trial: 0, // no gap between fixation and image
-    //     is_html: true
-    // };
-
     var fix_block = {
         type: 'single-stim',
-        stimuli: ['<p style="font-size:128px; text-align:center; margin-top:250%">+</p>'],
+        stimuli: ["<p "+fix_margin_var+" style='font-size:128px; text-align:center;'>+</p>"],
         timing_response: 200, // how long to show the fixation for in ms
         response_ends_trial: false,
         choices: 'none', // no valid keys
@@ -120,12 +134,12 @@
         is_html: true
     };
 
-    //experiment.push(fix_block)
+    experiment.push(fix_block)
 
     for(i=0; i<images.length; i++){
         var sent_block = {
             type: 'text',
-            text: '<p style="font-size:57px; text-align:center; line-height: 55px; margin-top:10%">' + sentence + '</p>' +
+            text: "<p "+sentence_margin_var+" style='font-size:57px; text-align:center; line-height: 55px'>" + sentence + '</p>' +
             "<p><p align='center' style='font-size:15px;'>Press spacebar to continue</p>",
             cont_key: ['space'],
             is_html: true

@@ -13,14 +13,42 @@
         -->
         <link href="jspsych-4.3/css/jspsych.css" rel="stylesheet" type="text/css"</link>
     </head>
+    <style>
+      .margin_class{
+        margin-top: 40%;
+      }
+      .scaled_fixation_class{
+        margin-top: 300%;
+      }
+      .lab_fixation_class{
+        margin-top: 250%;
+      }
+      .scaled_sentence_class{
+        margin-top: 20%;
+      }
+      .lab_sentence_class{
+        margin-top: 10%;
+      }
+    </style>
     <body>
     </body>
     <script>
-
-    //Last Edit: 3/24/16 (Rebecca)
+    smaller_scale = false
+    if(smaller_scale){
+      margin_var = "class='margin_class'"
+      fix_margin_var = "class='scaled_fixation_class'"
+      sentence_margin_var = "class='scaled_sentence_class'"
+    } else{
+      margin_var = ""
+      fix_margin_var = "class='lab_fixation_class'"
+      sentence_margin_var = "class='lab_sentence_class'"
+    }
 
     /* define experiment */
-    var sentence = "The blue dots are smaller than the red dots.";
+    var sentence = "The red dots are bigger than the blue dots.";
+
+    var response = "<p " + margin_var + " style='font-size:60px; text-align:center'>?</p>" +
+            "<p style='font-size:20px; text-align:center'>Press <strong>f</strong> for yes, <strong>j</strong> for no.</p>";
 
     var timeToRespond = 10000;
 
@@ -38,9 +66,6 @@
     });
 
     var test_stimuli = images;
-    /* var test_stimuli = images.map(function(image){
-        return ["<p align='center'><img src='" + image + "'></p>"]
-    }); */
 
     var repeatImage = 5;
 
@@ -69,17 +94,18 @@
     };
     */
 
-    var ID_block = {
-        type: 'survey-text',
-        questions: [["Please enter subject ID:"]]
-    };
+    //var images = jsPsych.randomization.repeat(test_stimuli, repeatImage);
+
+    var experiment = [];
 
     /* define instructions block */
     var instructions_block = {
         type: "text",
-        text: "<p style='margin-top:0%'>Welcome to the experiment!</p>" +
-            "<p>In this study, an image will appear in the center " +
-            "of the screen accompanied by a sentence. " +
+        text: "<p " + margin_var + ">Welcome to the experiment!</p>" +
+            "<p>In this study, a sentence will appear in the center " +
+            "of the screen. You may read it for as long as you like," +
+            " and then press spacebar to continue. " +
+            "After that, an image will appear on screen briefly. " +
             "Your task is to decide whether the sentence " +
             "accurately describes the picture.</p>" +
             "<p>You have up to " + timeToRespondSecs + " seconds to make your " +
@@ -91,25 +117,57 @@
             "<p>If the sentence <strong>does not</strong> " +
             "accurately describe the picture,<br>press the letter" +
             " <strong>j</strong> on the keyboard. </p>" +
-            "<p>Ready? Press any key to begin.</p>"
+            "<p>Ready? Press any key to begin.</p>",
         /* gives the subject some time after the instructions before expt starts */
         // timing_post_trial: 2000
     };
 
-    var sentPresent = "<p align='center' style='font-size:30px;margin-top:0px'>" + sentence + "</p><p align='center' style='font-size:15px;margin-top:-25px'>press <strong>f</strong> for yes, <strong>j</strong> for no"
+    experiment.push(instructions_block)
 
-    /* define test block */
-    var test_block = {
-        type: "single-stim",
-        // is_html: true,
-        stimuli: all_trials,
-        // 70 = F/f, 74 = J/j
-        choices: ['f', 'j'],
-        prompt: sentPresent,
-        timing_response: timeToRespond,
-        timing_post_trial: ISI
-        /* calls random post-trial timing
-        timing_post_trial: post_trial_gap */
+    var fix_block = {
+        type: 'single-stim',
+        stimuli: ["<p "+fix_margin_var+" style='font-size:128px; text-align:center;'>+</p>"],
+        timing_response: 200, // how long to show the fixation for in ms
+        response_ends_trial: false,
+        choices: 'none', // no valid keys
+        timing_post_trial: 0, // no gap between fixation and image
+        is_html: true
+    };
+
+    experiment.push(fix_block)
+
+    for(i=0; i<images.length; i++){
+        var sent_block = {
+            type: 'text',
+            text: "<p "+sentence_margin_var+" style='font-size:57px; text-align:center; line-height: 55px'>" + sentence + '</p>' +
+            "<p><p align='center' style='font-size:15px;'>Press spacebar to continue</p>",
+            cont_key: ['space'],
+            is_html: true
+        };
+
+        var stim_block = {
+            type: 'single-stim',
+            stimuli: images[i],
+            choices: ['none'],
+            timing_response: 200,
+            response_ends_trial: false,
+        };
+
+        var response_block = {
+            type: 'single-stim',
+            stimuli: [response],
+            choices: ['f','j'],
+            timing_response: 5000,
+            timing_post_trial: 200,
+            is_html: true
+        };
+
+        //experiment.push(blank_block);
+        experiment.push(sent_block);
+        experiment.push(fix_block);
+        experiment.push(stim_block);
+        experiment.push(response_block);
+
     };
 
 
@@ -118,6 +176,8 @@
         type: 'survey-text',
         questions: [["<p>That's it! Before you leave, a couple of questions about your experience in this study:</p> Did you find the experiment challenging? Why or why not?", "What can you tell us about when you would say that the sentence <strong>did</strong> match the picture?", "Anything else you'd like to tell us?"]]
     };
+
+    experiment.push(survey_block)
 
     /* generates unique code and appends data with code */
     function makeid(){
@@ -157,28 +217,13 @@
     /* define debrief block */
     var debrief_block = {
         type: "text",
-        text: "<p>Thanks for participating!</p>"
+        text: "<p style='text-align:center; margin-top:50%'>That's all! Thanks for participating!</p>",
+        cont_key: ['1']
     };
-
-    var end_block = {
-        type: 'single-stim',
-        stimuli: ['<p style="font-size:30px; text-align:center">Thanks for participating!</p>'],
-        //timing_response: 1000, // how long to show the fixation for in ms
-        //response_ends_trial: false,
-        choices: ['1'], // no valid keys
-        timing_post_trial: 0, // no gap between fixation and image
-        is_html: true
-    };
+    experiment.push(debrief_block)
 
     /* create an experiment definition array */
-    var experiment = [];
-    // experiment.push(welcome_block);
-    //experiment.push(ID_block);
-    experiment.push(instructions_block);
-    experiment.push(test_block);
-    experiment.push(survey_block);
-    //experiment.push(debrief_block);
-    experiment.push(end_block);
+
 
     /* start the experiment */
     /* embedded in "startExperiment" function for preloadImages */
