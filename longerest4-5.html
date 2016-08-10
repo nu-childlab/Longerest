@@ -17,16 +17,31 @@
       .margin_class{
         margin-top: 40%;
       }
+      .scaled_fixation_class{
+        margin-top: 300%;
+      }
+      .lab_fixation_class{
+        margin-top: 250%;
+      }
+      .scaled_sentence_class{
+        margin-top: 20%;
+      }
+      .lab_sentence_class{
+        margin-top: 10%;
+      }
     </style>
     <body>
     </body>
     <script>
-    smaller_scale = true
+    smaller_scale = false
     if(smaller_scale){
-      margin_var = "class='margin-class'"
-      alert("test")
+      margin_var = "class='margin_class'"
+      fix_margin_var = "class='scaled_fixation_class'"
+      sentence_margin_var = "class='scaled_sentence_class'"
     } else{
       margin_var = ""
+      fix_margin_var = "class='lab_fixation_class'"
+      sentence_margin_var = "class='lab_sentence_class'"
     }
     /* define experiment */
     var sentence4 = "The red dots are bigger than the blue dots.";
@@ -112,20 +127,9 @@
 
     experiment.push(instructions_block)
 
-    /* define test block */
-    // var blank_block = {
-    //     type: 'single-stim',
-    //     stimuli: [' '],
-    //     timing_response: 500, // how long to show the fixation for in ms
-    //     response_ends_trial: false,
-    //     choices: 'none', // no valid keys
-    //     timing_post_trial: 0, // no gap between fixation and image
-    //     is_html: true
-    // };
-
     var fix_block = {
         type: 'single-stim',
-        stimuli: ['<p style="font-size:128px; text-align:center; margin-top:250%">+</p>'],
+        stimuli: ["<p "+fix_margin_var+" style='font-size:128px; text-align:center;'>+</p>"],
         timing_response: 200, // how long to show the fixation for in ms
         response_ends_trial: false,
         choices: 'none', // no valid keys
@@ -138,8 +142,8 @@
     for(i=0; i<images4.length; i++){
         var sent_block = {
             type: 'text',
-            text: '<p style="font-size:57px; text-align:center; line-height: 55px; margin-top:10%">' + sentence4 + '</p>' +
-            "<p><p align='center' style='font-size:15px;'>Press spacebar to continue</p>",
+            text: "<p "+sentence_margin_var+" style='font-size:57px; text-align:center; line-height: 55px'>" + sentence4 + "</p>" +
+            "<p align='center' style='font-size:15px;'>Press spacebar to continue</p>",
             cont_key: ['space'],
             is_html: true
         };
@@ -174,7 +178,7 @@
 
     var break_block = {
         type: "text",
-        text: "<p>That's it for the first part!</p>" +
+        text: "<p"+margin_var+">That's it for the first part!</p>" +
             "<p>Press any key when you're ready to begin the next section!</p>",
         /* gives the subject some time after the instructions before expt starts */
         // timing_post_trial: 2000
@@ -185,8 +189,8 @@
     for(i=0; i<images5.length; i++){
         var sent_block = {
             type: 'text',
-            text: '<p style="font-size:57px; text-align:center; line-height: 55px; margin-top:10%">' + sentence5 + '</p>' +
-            "<p><p align='center' style='font-size:15px;'>Press spacebar to continue</p>",
+            text: "<p "+sentence_margin_var+" style='font-size:57px; text-align:center; line-height: 55px'>" + sentence5 + "</p>" +
+            "<p align='center' style='font-size:15px;'>Press spacebar to continue</p>",
             cont_key: ['space'],
             is_html: true
         };
