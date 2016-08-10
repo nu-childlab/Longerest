@@ -1,0 +1,287 @@
+<!doctype html>
+<html>
+    <head>
+        <title>My experiment</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="jspsych-4.3/jspsych.js"></script>
+        <script src="jspsych-4.3/plugins/jspsych-text.js"></script>
+        <script src="jspsych-4.3/plugins/jspsych-survey-text.js"></script>
+        <script src="jspsych-4.3/plugins/jspsych-single-stim.js"></script>
+        <script src="FileSaver.js-master/FileSaver.js"></script>
+        <!-- use the plugin for multiple trial elemets
+        <script src="jspsych-4.3/plugins/jspsych-multi-stim-multi-response.js"></script>
+        -->
+        <link href="jspsych-4.3/css/jspsych.css" rel="stylesheet" type="text/css"</link>
+    </head>
+    <style>
+      .margin_class{
+        margin-top: 40%;
+      }
+    </style>
+    <body>
+    </body>
+    <script>
+    smaller_scale = true
+    if(smaller_scale){
+      margin_var = "class='margin-class'"
+      alert("test")
+    } else{
+      margin_var = ""
+    }
+    /* define experiment */
+    var sentence4 = "The red dots are bigger than the blue dots.";
+
+    var response = "<p " + margin_var + " style='font-size:60px; text-align:center'>?</p>" +
+            "<p style='font-size:20px; text-align:center'>Press <strong>f</strong> for yes, <strong>j</strong> for no.</p>";
+
+    var timeToRespond = 10000;
+
+    var timeToRespondSecs = 10000/1000;
+
+    var ISI = 400;
+
+    var numbers = [2,3,4,5,7,8,9,10,12,13,14,15,17,18,19,20,22,23,24,25,27,28,29,30];
+      //var numbers = [2];
+
+    var images4 = numbers.map(function(i){
+        var withZero = i;
+        if (i < 10) withZero = "0" + i;
+        return "img_dots/Slide" + withZero + ".png";
+    });
+
+    var test_stimuli4 = images4;
+
+    var repeatImage = 5;
+
+    var trials4 = jsPsych.randomization.repeat(test_stimuli4, repeatImage);
+    images4 = trials4;
+
+    //EXPERIMENT 5 SETUP
+
+    var sentence5 = "The red lines are longer than the blue lines.";
+    var images5 = numbers.map(function(i){
+        var withZero = i;
+        if (i < 10) withZero = "0" + i;
+        return "img_lines/Slide" + withZero + ".jpg";
+    });
+
+    var test_stimuli5 = images5;
+    var trials5 = jsPsych.randomization.repeat(test_stimuli5, repeatImage);
+    images5 = trials5;
+
+    all_images = images4.concat(images5)
+
+    /* pre-load pictures */
+    function updateLoadedCount(nLoaded) {
+        var percentcomplete = nLoaded / all_images.length * 100;
+        console.log('Loaded '+percentcomplete+'% of experiment');
+    }
+
+    jsPsych.preloadImages(all_images, function(){ startExperiment(); }, function(nLoaded){ updateLoadedCount(nLoaded); });
+
+
+    var num_trials = all_images.length;
+
+    //var images = jsPsych.randomization.repeat(test_stimuli4, repeatImage);
+
+    var experiment = [];
+
+    /* define instructions block */
+    var instructions_block = {
+        type: "text",
+        text: "<p " + margin_var + ">Welcome to the experiment!</p>" +
+            "<p>In this study, a sentence will appear in the center " +
+            "of the screen. You may read it for as long as you like," +
+            " and then press spacebar to continue. " +
+            "After that, an image will appear on screen briefly. " +
+            "Your task is to decide whether the sentence " +
+            "accurately describes the picture.</p>" +
+            "<p>You have up to " + timeToRespondSecs + " seconds to make your " +
+            " decision for each trial. There are " + num_trials +
+            " trials in the experiment.</p>" +
+            "<p>If the sentence " +
+            "<strong>accurately</strong> describes the picture,<br> " +
+            "press the letter <strong>f</strong> on the keyboard." +
+            "<p>If the sentence <strong>does not</strong> " +
+            "accurately describe the picture,<br>press the letter" +
+            " <strong>j</strong> on the keyboard. </p>" +
+            "<p>Ready? Press any key to begin.</p>",
+        /* gives the subject some time after the instructions before expt starts */
+        // timing_post_trial: 2000
+    };
+
+    experiment.push(instructions_block)
+
+    /* define test block */
+    // var blank_block = {
+    //     type: 'single-stim',
+    //     stimuli: [' '],
+    //     timing_response: 500, // how long to show the fixation for in ms
+    //     response_ends_trial: false,
+    //     choices: 'none', // no valid keys
+    //     timing_post_trial: 0, // no gap between fixation and image
+    //     is_html: true
+    // };
+
+    var fix_block = {
+        type: 'single-stim',
+        stimuli: ['<p style="font-size:128px; text-align:center; margin-top:250%">+</p>'],
+        timing_response: 200, // how long to show the fixation for in ms
+        response_ends_trial: false,
+        choices: 'none', // no valid keys
+        timing_post_trial: 0, // no gap between fixation and image
+        is_html: true
+    };
+
+    experiment.push(fix_block)
+
+    for(i=0; i<images4.length; i++){
+        var sent_block = {
+            type: 'text',
+            text: '<p style="font-size:57px; text-align:center; line-height: 55px; margin-top:10%">' + sentence4 + '</p>' +
+            "<p><p align='center' style='font-size:15px;'>Press spacebar to continue</p>",
+            cont_key: ['space'],
+            is_html: true
+        };
+
+        var stim_block = {
+            type: 'single-stim',
+            stimuli: images4[i],
+            choices: ['none'],
+            timing_response: 200,
+            response_ends_trial: false,
+        };
+
+        var response_block = {
+            type: 'single-stim',
+            stimuli: [response],
+            choices: ['f','j'],
+            timing_response: 5000,
+            timing_post_trial: 200,
+            is_html: true,
+            data:{experiment:"lgs4"}
+        };
+
+        //experiment.push(blank_block);
+        experiment.push(sent_block);
+        experiment.push(fix_block);
+        experiment.push(stim_block);
+        experiment.push(response_block);
+
+    };
+
+    //EXPERIMENT 5
+
+    var break_block = {
+        type: "text",
+        text: "<p>That's it for the first part!</p>" +
+            "<p>Press any key when you're ready to begin the next section!</p>",
+        /* gives the subject some time after the instructions before expt starts */
+        // timing_post_trial: 2000
+    };
+
+    experiment.push(break_block)
+
+    for(i=0; i<images5.length; i++){
+        var sent_block = {
+            type: 'text',
+            text: '<p style="font-size:57px; text-align:center; line-height: 55px; margin-top:10%">' + sentence5 + '</p>' +
+            "<p><p align='center' style='font-size:15px;'>Press spacebar to continue</p>",
+            cont_key: ['space'],
+            is_html: true
+        };
+
+        var stim_block = {
+            type: 'single-stim',
+            stimuli: images5[i],
+            choices: ['none'],
+            timing_response: 200,
+            response_ends_trial: false,
+        };
+
+        var response_block = {
+            type: 'single-stim',
+            stimuli: [response],
+            choices: ['f','j'],
+            timing_response: 5000,
+            timing_post_trial: 200,
+            is_html: true,
+            data:{experiment:"lgs5"}
+        };
+
+        //experiment.push(blank_block);
+        experiment.push(sent_block);
+        experiment.push(fix_block);
+        experiment.push(stim_block);
+        experiment.push(response_block);
+
+    };
+
+
+
+
+
+    /* define survey block */
+    var survey_block = {
+        type: 'survey-text',
+        questions: [["<p>That's it! Before you leave, a couple of questions about your experience in this study:</p> Did you find the experiment challenging? Why or why not?", "What can you tell us about when you would say that the sentence <strong>did</strong> match the picture?", "Anything else you'd like to tell us?"]]
+    };
+
+    experiment.push(survey_block)
+
+
+    function subjcheck(subj){
+        //alert("subj" + subj);
+        //alert("subj0:" + subj[0])
+        if(subj[0] != "s"){
+            //alert("added")
+            subj = "s" + subj;
+        }
+        nums = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
+        for(i = 1; i < subj.length; i++) {
+            //alert("subjstep:" + subj[i]);
+            //alert("index: " + nums.indexOf(subj[i]));
+            if(!(nums.indexOf(subj[i]) > -1)) {
+                nsubj = prompt("Subject ID must consist of an s followed by only numbers. Please enter a valid subject ID:", "s999");
+                return subjcheck(nsubj);
+            }
+        }
+        return subj;
+
+    }
+
+    /* define debrief block */
+    var debrief_block = {
+        type: "text",
+        text: "<p style='text-align:center; margin-top:50%'>That's all! Thanks for participating!</p>",
+        cont_key: ['1']
+    };
+    experiment.push(debrief_block)
+
+    /* create an experiment definition array */
+
+
+    /* start the experiment */
+    /* embedded in "startExperiment" function for preloadImages */
+    function startExperiment(){
+        var subj = prompt("Please enter Subject ID", "s999");
+        subj = subjcheck(subj);
+        jsPsych.data.addProperties({subject: subj});
+        //alert(subj)
+        jsPsych.init({
+            experiment_structure: experiment,
+            /* the below prints the data to the screen */
+            on_finish: function() {
+                //jsPsych.data.displayData('csv');
+                var dat = jsPsych.data.dataAsCSV();
+                //var testdat = jsPsych.data.dataAsCSV();
+                //document.write(testdat);
+                var blob = new Blob([dat], {type: "text/plain;charset=utf-8"});
+                saveAs(blob, subj + ".csv");
+             }
+        });
+    }
+
+
+    </script>
+</html>
