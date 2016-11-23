@@ -1,0 +1,193 @@
+<!doctype html>
+<html>
+    <head>
+        <title>My experiment</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="jspsych-4.3/jspsych.js"></script>
+        <script src="jspsych-4.3/plugins/jspsych-text.js"></script>
+        <script src="jspsych-4.3/plugins/jspsych-survey-text.js"></script>
+        <script src="jspsych-4.3/plugins/jspsych-single-stim.js"></script>
+        <script src="FileSaver.js-master/FileSaver.js"></script>
+        <!-- use the plugin for multiple trial elemets
+        <script src="jspsych-4.3/plugins/jspsych-multi-stim-multi-response.js"></script>
+        -->
+
+        <!-- add to firebase lgs2n project--> 
+        <script src="https://www.gstatic.com/firebasejs/3.6.1/firebase.js"></script>
+        <script>
+          // Initialize Firebase
+          var config = {
+            apiKey: "AIzaSyBohllr7tmBsoyff2dwhRgjp2dlkFQG6Ao",
+            authDomain: "lgs2n-3321d.firebaseapp.com",
+            databaseURL: "https://lgs2n-3321d.firebaseio.com",
+            storageBucket: "lgs2n-3321d.appspot.com",
+            messagingSenderId: "1062278875045"
+          };
+          firebase.initializeApp(config);
+        </script>
+
+        <link href="jspsych-4.3/css/jspsych.css" rel="stylesheet" type="text/css"</link>
+    </head>
+    <body>
+    </body>
+    <script>
+
+    /* define experiment */
+    var sentence = "It's not true that the red dots are bigger than the blue dots.";
+
+    var timeToRespond = 10000;
+
+    var timeToRespondSecs = 10000/1000;
+
+    var ISI = 400;
+
+    var numbers = [2,3,4,5,7,8,9,10,12,13,14,15,17,18,19,20,22,23,24,25,27,28,29,30];
+      //var numbers = [2];
+
+    var images = numbers.map(function(i){
+        var withZero = i;
+        if (i < 10) withZero = "0" + i;
+        return "img_dots/Slide" + withZero + ".png";
+    });
+
+    var test_stimuli = images;
+    /* var test_stimuli = images.map(function(image){
+        return ["<p align='center'><img src='" + image + "'></p>"]
+    }); */
+
+    var repeatImage = 5;
+
+    var all_trials = jsPsych.randomization.repeat(test_stimuli, repeatImage);
+
+    var num_trials = images.length * repeatImage;
+
+    /* function that generates a random value between 750 and 2250, uniform sampling */
+    /* var post_trial_gap = function() {
+        return Math.floor( Math.random() * 1500 ) + 750;
+    } */
+
+    /* pre-load pictures */
+    function updateLoadedCount(nLoaded) {
+        var percentcomplete = nLoaded / images.length * 100;
+        console.log('Loaded '+percentcomplete+'% of experiment');
+    }
+
+    jsPsych.preloadImages(images, function(){ startExperiment(); }, function(nLoaded){ updateLoadedCount(nLoaded); });
+
+    var ID_block = {
+        type: 'survey-text',
+        questions: [["Please enter subject ID:"]]
+    };
+
+    /* define instructions block */
+    var instructions_block = {
+        type: "text",
+        text: "<p>Welcome to the experiment!</p>" +
+            "<p>In this study, an image will appear in the center " +
+            "of the screen accompanied by a sentence. " +
+            "Your task is to decide whether the sentence " +
+            "accurately describes the picture.</p>" +
+            "<p>You have up to " + timeToRespondSecs + " seconds to make your " +
+            " decision for each trial. There are " + num_trials +
+            " trials in the experiment.</p>" +
+            "<p>If the sentence " +
+            "<strong>accurately</strong> describes the picture,<br> " +
+            "press the letter <strong>f</strong> on the keyboard." +
+            "<p>If the sentence <strong>does not</strong> " +
+            "accurately describe the picture,<br>press the letter" +
+            " <strong>j</strong> on the keyboard. </p>" +
+            "<p>Ready? Press any key to begin.</p>"
+        /* gives the subject some time after the instructions before expt starts */
+        // timing_post_trial: 2000
+    };
+
+    var sentPresent = "<p align='center' style='font-size:30px;'>" + sentence + "</p><p align='center' style='font-size:15px;'>press <strong>f</strong> for yes, <strong>j</strong> for no"
+
+    /* define test block */
+    var test_block = {
+        type: "single-stim",
+        // is_html: true,
+        stimuli: all_trials,
+        // 70 = F/f, 74 = J/j
+        choices: ['f', 'j'],
+        prompt: sentPresent,
+        timing_response: timeToRespond,
+        timing_post_trial: ISI
+        /* calls random post-trial timing
+        timing_post_trial: post_trial_gap */
+    };
+
+
+    /* define survey block */
+    var survey_block = {
+        type: 'survey-text',
+        questions: [["<p>That's it! Before we present the code, please consider answering these optional questions about your experience in this study:</p> Did you find the experiment challenging? Why or why not?", "What can you tell us about when you would say that the sentence <strong>did</strong> match the picture?", "Anything else you'd like to tell us?"]]
+    };
+
+/* mturk req */ 
+
+    /* generates unique code and appends data with code */
+    function makeid(){
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+        for( var i=0; i < 5; i++ )
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+        return text;
+    }
+
+    var code = makeid();
+
+    jsPsych.data.addProperties({subject: code});
+
+    var debrief_block = {
+        type: "text",
+        text: "<p>Please enter the code below on Mechanical Turk to complete the HIT. </p>" + 
+            "<p style='font-size: 20px;'><strong>Note: You must copy the code before leaving this screen!</strong></p>" +
+            "<p style='font-size: 30px;'>" + code + "</p>" + 
+            "<p>Thank you for participating!</p>" +
+            "<p>Press spacebar to conclude this experiment.</p>",
+        cont_key: ['space']
+    };
+
+    function saveToFirebase(code, filedata){
+        var ref = firebase.database().ref(code).set(filedata);
+    }
+
+
+    var submit_block = {
+        type: 'single-stim',
+        stimuli: [" "],
+        choices: ['none'],
+        timing_response: .001,
+        timing_post_trial: 0,
+        on_finish: function() {
+            saveToFirebase(code, jsPsych.data.getData());
+        }
+    }
+
+/* end mTurk req */
+
+    /* create an experiment definition array */
+    var experiment = [];
+    experiment.push(instructions_block);
+    experiment.push(test_block);
+    experiment.push(survey_block);
+    experiment.push(submit_block);
+    experiment.push(debrief_block);
+
+    /* start the experiment */
+    /* embedded in "startExperiment" function for preloadImages */
+    function startExperiment(){
+        jsPsych.init({
+            experiment_structure: experiment,
+            /* the below prints the data to the screen */
+            on_finish: function() {
+             }
+        });
+    }
+
+
+    </script>
+</html>
